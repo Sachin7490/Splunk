@@ -43,6 +43,10 @@ Splunk is versatile and used across various use cases. These use cases demonstra
    - **IoT Device Monitoring**: Monitor and analyze data from IoT devices to ensure they are functioning correctly and to detect anomalies.
    - **Predictive Maintenance**: Use machine learning to predict when IoT devices or machinery might fail and schedule maintenance proactively.
 
+**Splunk Architecture**:
+
+![Splunk Architecture](https://github.com/user-attachments/assets/1bb8f20f-6afd-4f19-a2b6-fe56b3d352bb)
+
 Splunk comprises several key components that work together to collect, index, search, analyze, and visualize machine-generated data. These components are brodly classified into two parts such as Processing Components and Management Components.
 
 Processing Components: Responsible to collect, store and process the data.
@@ -73,6 +77,144 @@ Management Components: Responsible to manage overall splunk operations.
 
 These components together form the comprehensive Splunk platform, enabling users to collect, process, analyze, and visualize data from diverse sources for a wide range of applications.
 
-**Splunk Architecture**:
+Splunk Data Pipeline.
 
-![Splunk Architecture](https://github.com/user-attachments/assets/1bb8f20f-6afd-4f19-a2b6-fe56b3d352bb)
+![Splunk Data Pipeline](https://github.com/user-attachments/assets/45ba6dcc-9fb1-4e5e-a6ff-52419779a332)
+
+The Splunk data pipeline refers to the process through which data flows from the moment it is ingested into Splunk until it is indexed and made available for search and analysis. The pipeline is divided into several stages, each responsible for a specific set of tasks. Here is an overview of the Splunk data pipeline:
+
+1. Data Input (Ingestion)
+Data Collection: Data is collected from various sources using different input methods, such as forwarders, scripted inputs, HTTP Event Collectors (HEC), and monitoring files.
+Forwarders: Universal Forwarders and Heavy Forwarders send data to Splunk Indexers. Universal Forwarders are lightweight and primarily forward raw data, while Heavy Forwarders can preprocess data before forwarding it.
+2. Parsing (Event Processing)
+Breaking the Data into Events: During this stage, Splunk breaks the raw data into individual events based on predefined or custom delimiters (such as newline characters or timestamps).
+Timestamp Extraction: Splunk extracts timestamps from the data, which are critical for indexing and searching.
+Metadata Addition: Metadata, such as the source, host, and sourcetype, is added to each event.
+3. Indexing
+Indexing Data: Events are indexed, which involves transforming the raw data into a format suitable for fast searching. This process includes tokenization and the creation of index files.
+Storage: Indexed data is stored in index buckets, which are organized into directories on disk. Indexes are divided into hot, warm, cold, and frozen stages based on the age of the data.
+4. Search (Query Execution)
+Search Processing Language (SPL): Users query the indexed data using Splunk's Search Processing Language (SPL).
+Search Head: Distributes search requests across multiple Indexers, aggregates the results, and presents them to the user.
+Real-time and Historical Searches: Splunk supports both real-time searches (continuously updated results) and historical searches (based on previously indexed data).
+
+Splunk Common Search Commands:
+
+![Splunk Common Search Commands](https://github.com/user-attachments/assets/a59eaf1a-cadb-430a-8707-b21630d313ee)
+
+
+Splunk provides a wide range of search commands to help users manipulate and analyze their data. Here are some of the most commonly used search commands in Splunk, along with brief explanations and examples of how they can be used:
+
+### Common Search Commands
+
+1. **search**
+   - **Description**: Filters events based on search criteria.
+   - **Example**: 
+     ```spl
+     index=main sourcetype=access_combined error
+     ```
+
+2. **fields**
+   - **Description**: Includes or excludes specific fields in the search results.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | fields host, status
+     ```
+
+3. **table**
+   - **Description**: Displays search results in a table format with specified fields.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | table _time, host, status
+     ```
+
+4. **stats**
+   - **Description**: Computes aggregate statistics on the search results.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | stats count by status
+     ```
+
+5. **timechart**
+   - **Description**: Creates a time-based chart of statistical aggregates.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | timechart count by status
+     ```
+
+6. **eval**
+   - **Description**: Calculates an expression and stores the result in a new field.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | eval response_time_ms = response_time * 1000
+     ```
+
+7. **where**
+   - **Description**: Filters search results based on an expression.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | where status=404
+     ```
+
+8. **dedup**
+   - **Description**: Removes duplicate events based on specified fields.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | dedup session_id
+     ```
+
+9. **sort**
+   - **Description**: Sorts search results by specified fields.
+   - **Example**:
+     ```spl
+     index=main sourcetype=access_combined | sort -_time
+     ```
+
+10. **top**
+    - **Description**: Displays the most frequent values of a field.
+    - **Example**:
+      ```spl
+      index=main sourcetype=access_combined | top status
+      ```
+
+11. **chart**
+    - **Description**: Creates a chart of statistical aggregates.
+    - **Example**:
+      ```spl
+      index=main sourcetype=access_combined | chart count by status
+      ```
+
+12. **rex**
+    - **Description**: Extracts fields using regular expressions.
+    - **Example**:
+      ```spl
+      index=main sourcetype=access_combined | rex field=_raw "user=(?<user>\w+)"
+      ```
+
+13. **rename**
+    - **Description**: Renames fields.
+    - **Example**:
+      ```spl
+      index=main sourcetype=access_combined | rename status as http_status
+      ```
+
+14. **eventstats**
+    - **Description**: Computes aggregate statistics and adds them to each event.
+    - **Example**:
+      ```spl
+      index=main sourcetype=access_combined | eventstats avg(response_time) as avg_response_time
+      ```
+
+15. **join**
+    - **Description**: Combines the results of two searches.
+    - **Example**:
+      ```spl
+      index=main sourcetype=access_combined | join type=left session_id [search index=errors | fields session_id, error_code]
+      ```
+
+By mastering these common search commands, you can effectively analyze and visualize your data in Splunk, enabling you to extract valuable insights and make informed decisions.
+
+
+
+
+
